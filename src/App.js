@@ -1,10 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import './App.css';
+import Filters from './components/Filters';
 import Table from './components/Table';
 import DataContext from './context/DataContext';
 
 function App() {
   const [planets, setPlanets] = useState([]);
+  const [planetFiltered, setPlanetFiltered] = useState([]);
   useEffect(() => {
     fetch('https://swapi.dev/api/planets').then((response) => response.json()).then((data) => {
       const planetsApi = data.results.map(({
@@ -37,13 +39,16 @@ function App() {
         url,
       }));
       setPlanets(planetsApi);
+      setPlanetFiltered(planetsApi);
     });
   }, []);
   const values = useMemo(() => ({
-    planets,
-  }), [planets]);
+    planets, setPlanets, planetFiltered, setPlanetFiltered,
+  }), [planets, setPlanets, planetFiltered, setPlanetFiltered]);
+  console.log(planetFiltered);
   return (
     <DataContext.Provider value={ values }>
+      <Filters />
       <Table />
     </DataContext.Provider>
   );
