@@ -2,11 +2,14 @@ import { useContext, useState } from 'react';
 import DataContext from '../context/DataContext';
 
 function Filters() {
+  const { planets, setPlanetFiltered, planetFiltered } = useContext(DataContext);
+  const [options, setOptions] = useState([['population', 'population'],
+    ['orbital_period', 'orbitalPeriod'], ['diameter', 'diameter'],
+    ['rotation_period', 'rotationPeriod'], ['surface_water', 'surfaceWater']]);
   const [filters, setFilters] = useState({ nome: '',
     number: 0,
     filterCategory: 'population',
     filterNumber: 'maior que' });
-  const { planets, setPlanetFiltered, planetFiltered } = useContext(DataContext);
 
   const handleChange = ({ target }) => {
     const { value, name } = target;
@@ -18,6 +21,8 @@ function Filters() {
   };
 
   const handleClick = () => {
+    console.log(planetFiltered);
+    console.log(filters.filterCategory);
     const newFilter = planetFiltered.filter((planet) => {
       if (filters.filterNumber === 'maior que') {
         const trueOrFalse = Number(planet[filters.filterCategory]) > filters.number;
@@ -31,6 +36,10 @@ function Filters() {
       === Number(filters.number);
       return trueOrFalse;
     });
+    const newOptions = options.filter((option) => option[1] !== filters.filterCategory);
+    console.log(newOptions);
+    setOptions(newOptions);
+    setFilters({ ...filters, filterCategory: newOptions[0][1] });
     setPlanetFiltered(newFilter);
   };
   return (
@@ -50,36 +59,15 @@ function Filters() {
         value={ filters.filterCategory }
         onChange={ handleChange }
       >
-        <option
-          value="population"
-        >
-          population
+        {options.map((option) => (
+          <option
+            key={ option[0] }
+            value={ option[1] }
+          >
+            {option[0]}
 
-        </option>
-        <option
-          value="orbitalPeriod"
-        >
-          orbital_period
-
-        </option>
-        <option
-          value="diameter"
-        >
-          diameter
-
-        </option>
-        <option
-          value="rotationPeriod"
-        >
-          rotation_period
-
-        </option>
-        <option
-          value="surfaceWater"
-        >
-          surface_water
-
-        </option>
+          </option>
+        ))}
       </select>
       <select
         name="filterNumber"
