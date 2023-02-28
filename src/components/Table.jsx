@@ -17,7 +17,7 @@ function Table() {
           <th>Surface Water</th>
           <th>Population</th>
           <th>Films</th>
-          <th>created</th>
+          <th>Created</th>
           <th>Edited</th>
           <th>Url</th>
         </tr>
