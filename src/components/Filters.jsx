@@ -6,11 +6,10 @@ function Filters() {
     number: 0,
     filterCategory: 'population',
     filterNumber: 'maior que' });
-  const { planets, setPlanetFiltered } = useContext(DataContext);
+  const { planets, setPlanetFiltered, planetFiltered } = useContext(DataContext);
 
   const handleChange = ({ target }) => {
     const { value, name } = target;
-    console.log(value, name);
     setFilters({ ...filters, [name]: value });
     if (name === 'nome') {
       const planetsFiltered = planets.filter((planet) => planet.name.includes(value));
@@ -19,7 +18,7 @@ function Filters() {
   };
 
   const handleClick = () => {
-    const newFilter = planets.filter((planet) => {
+    const newFilter = planetFiltered.filter((planet) => {
       if (filters.filterNumber === 'maior que') {
         const trueOrFalse = Number(planet[filters.filterCategory]) > filters.number;
         return trueOrFalse;
@@ -30,8 +29,6 @@ function Filters() {
       }
       const trueOrFalse = Number(planet[filters.filterCategory])
       === Number(filters.number);
-      console.log(Number(planet[filters.filterCategory]), filters.number);
-      console.log(trueOrFalse);
       return trueOrFalse;
     });
     setPlanetFiltered(newFilter);
