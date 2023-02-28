@@ -45,7 +45,6 @@ function App() {
   const values = useMemo(() => ({
     planets, setPlanets, planetFiltered, setPlanetFiltered,
   }), [planets, setPlanets, planetFiltered, setPlanetFiltered]);
-  console.log(planetFiltered);
   return (
     <DataContext.Provider value={ values }>
       <Filters />
