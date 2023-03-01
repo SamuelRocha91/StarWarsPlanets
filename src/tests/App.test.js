@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react';
 import App from '../App';
 import { data } from './Helpers/mockData';
 import userEvent from '@testing-library/user-event';
+import DataProvider from '../context/DataProvider';
 
  
 
@@ -31,7 +32,10 @@ describe('Verifica se a aplicação...', () => {
       });
 
   test('renderiza filtros para as informações a serem carregadas', () => {
-    render(<App />)
+    render( <DataProvider>
+      <App />
+    </DataProvider>,
+  )
     const inputText = screen.getByTestId("name-filter");
     const columnFilter = screen.getByTestId("column-filter")
     const comparisonFilter = screen.getByTestId("comparison-filter")
@@ -43,7 +47,10 @@ describe('Verifica se a aplicação...', () => {
     expect(valueFilter).toBeInTheDocument()
   })
   test('renderiza uma tabela com um dado conteúdo de título de categoria', () => {
-    render(<App />)
+    render( <DataProvider>
+      <App />
+    </DataProvider>,
+  );
     const classe = screen.getAllByRole('columnheader')
     category.map((item,index) => {
       expect(classe[index]).toHaveTextContent(item);
@@ -53,7 +60,10 @@ describe('Verifica se a aplicação...', () => {
   })
 
   test('faz a requisição a API e renderiza as informações necessárias', async () => {
-    render(<App />)
+    render( <DataProvider>
+      <App />
+    </DataProvider>,
+  );
     const planet = await screen.findByText("Tatooine")
     expect(planet).toBeInTheDocument()
     expect(global.fetch).toHaveBeenCalled()
@@ -62,7 +72,10 @@ describe('Verifica se a aplicação...', () => {
   })
 
   test('consegue fazer a filtragem do input de texto corretamente', async () => {
-    render(<App />)
+    render( <DataProvider>
+      <App />
+    </DataProvider>,
+  );
     const inputText = screen.getByTestId("name-filter");
     const planet = await screen.findByText("Tatooine");
 
@@ -84,7 +97,10 @@ describe('Verifica se a aplicação...', () => {
   })
 
   test('consegue realizar filtros de comparação por categoria e números', async () => {
-    const { debug } = render(<App />)
+    render( <DataProvider>
+      <App />
+    </DataProvider>,
+  );
 
     const planet = await screen.findByText("Tatooine");
 
@@ -94,7 +110,6 @@ describe('Verifica se a aplicação...', () => {
     const button = screen.getByTestId("button-filter")
 
     userEvent.type(valueFilter, "2000000000")
-    debug();
 
     userEvent.click(button)
 
@@ -117,5 +132,48 @@ describe('Verifica se a aplicação...', () => {
     userEvent.type(valueFilter, "311")
     userEvent.click(button)
     expect(screen.queryByText('Naboo')).not.toBeInTheDocument()
+  })
+
+  test('consegue apagar os filtros selecionados', async() => {
+    render(<DataProvider>
+      <App />
+    </DataProvider>)
+    const planet = await screen.findByText("Alderaan");
+    const btnRemoveAll = screen.getByTestId('button-remove-filters');
+
+    expect(btnRemoveAll).toBeInTheDocument()
+
+    const columnFilter = screen.getByTestId("column-filter")
+    const comparisonFilter = screen.getByTestId("comparison-filter")
+    const valueFilter = screen.getByTestId("value-filter");
+    const button = screen.getByTestId("button-filter")
+
+   
+    userEvent.type(valueFilter, "2000000000")
+
+    userEvent.click(button)
+
+    expect(screen.getByText('Naboo')).toBeInTheDocument()
+    expect(screen.getByText('Coruscant')).toBeInTheDocument()
+    expect(screen.queryByText('Tatooine')).not.toBeInTheDocument()
+    expect(screen.getByRole('button', {name: 'X'})).toBeInTheDocument()
+
+
+    userEvent.clear(valueFilter)
+    userEvent.type(valueFilter, "368")
+    userEvent.selectOptions(screen.getByTestId('column-filter'), "orbitalPeriod")
+    userEvent.selectOptions(screen.getByTestId('comparison-filter'), "menor que")
+    userEvent.click(button)
+
+    expect(screen.getByText('Naboo')).toBeInTheDocument()
+    expect(screen.queryByText('Coruscant')).not.toBeInTheDocument()
+
+    userEvent.click(screen.getAllByRole('button', {name: 'X'})[1])
+
+    expect(screen.getByText('Coruscant')).toBeInTheDocument()
+
+    userEvent.click(btnRemoveAll)
+
+    expect(screen.getByText('Tatooine')).toBeInTheDocument()
   })
 })

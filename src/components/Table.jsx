@@ -1,8 +1,14 @@
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import DataContext from '../context/DataContext';
 
 function Table() {
   const { planetFiltered } = useContext(DataContext);
+  const { fetchAPI } = useContext(DataContext);
+
+  useEffect(() => {
+    fetchAPI();
+  }, []);
+
   return (
     <table>
       <thead>
