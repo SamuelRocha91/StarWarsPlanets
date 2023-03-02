@@ -1,22 +1,52 @@
 import { useContext, useEffect, useState } from 'react';
 import DataContext from '../context/DataContext';
+import FilterContext from '../context/FilterContext';
 
 function Filters() {
   const { planets, setPlanetFiltered } = useContext(DataContext);
-  const [positions, setposition] = useState([]);
+  const { options,
+    setOptions,
+    positions,
+    setposition,
+    order,
+    setOrder,
+    selectFilters,
+    setSelectFilters } = useContext(FilterContext);
+
+  const categorys = [['population', 'population'],
+    ['orbital_period', 'orbitalPeriod'], ['diameter', 'diameter'],
+    ['rotation_period', 'rotationPeriod'], ['surface_water', 'surfaceWater']];
+
   const [filters, setFilters] = useState({ nome: '',
     number: 0,
+    columnSort: 'population',
     filterCategory: 'population',
-    filterNumber: 'maior que' });
-  const [selectFilters, setSelectFilters] = useState([]);
-  const [options, setOptions] = useState([['population', 'population'],
-    ['orbital_period', 'orbitalPeriod'], ['diameter', 'diameter'],
-    ['rotation_period', 'rotationPeriod'], ['surface_water', 'surfaceWater']]);
+    filterNumber: 'maior que',
+    column: 'population',
+    sort: 'ASC' });
+
+  const orderFilter = (planetsFiltered) => {
+    const { column } = order;
+    const negativeNumber = -1;
+    if (order && order.sort === 'ASC') {
+      return planetsFiltered
+        .sort((a, b) => {
+          if (a[column] === 'unknown') {
+            return 1;
+          } if (b[column] === 'unknown') {
+            return negativeNumber;
+          }
+          return Number(a[column]) - Number(b[column]);
+        });
+    } if (order && order.sort === 'DESC') {
+      return planetsFiltered
+        .sort((a, b) => Number(b[column]) - Number(a[column]));
+    }
+  };
 
   const newFilter = () => {
     const planetsFiltered = planets.filter((planet) => selectFilters
       .every(({ column, comparison, value }) => {
-        console.log(column, comparison, value);
         if (comparison === 'maior que') {
           const trueOrFalse = Number(planet[column]) > value;
           console.log(trueOrFalse);
@@ -29,12 +59,13 @@ function Filters() {
         const trueOrFalse = Number(planet[column])
     === Number(value);
         return trueOrFalse;
-      }));
-    console.log(planetsFiltered);
-    console.log(selectFilters);
-    setPlanetFiltered(planetsFiltered.filter((planet) => planet
-      .name.includes(filters.nome)));
+      })).filter((planet) => planet
+      .name.includes(filters.nome));
+
+    const orderedPlanets = orderFilter(planetsFiltered);
+    setPlanetFiltered(orderedPlanets || planetsFiltered);
   };
+
   const opt = () => {
     const newOptions = options.filter((option) => {
       if (positions.length === 0) {
@@ -44,10 +75,11 @@ function Filters() {
     });
     setOptions(newOptions);
   };
+
   useEffect(() => {
     newFilter();
     opt();
-  }, [filters.nome, positions, selectFilters, setSelectFilters]);
+  }, [filters.nome, positions, selectFilters, order]);
 
   const handleChange = ({ target }) => {
     const { value, name } = target;
@@ -70,6 +102,10 @@ function Filters() {
     }
     const newSelectFilter = selectFilters.filter((select, i) => i !== index);
     setSelectFilters(newSelectFilter);
+  };
+
+  const saveOrderFilter = () => {
+    setOrder({ column: filters.column, sort: filters.sort });
   };
 
   return (
@@ -134,6 +170,55 @@ function Filters() {
         onClick={ () => removeFilter('all') }
       >
         Remover filtros
+      </button>
+      <select
+        name="column"
+        id="columnSort"
+        data-testid="column-sort"
+        value={ filters.column }
+        onChange={ handleChange }
+      >
+        {categorys.map((option) => (
+          <option
+            key={ option[0] }
+            value={ option[1] }
+          >
+            {option[0]}
+
+          </option>
+        ))}
+      </select>
+
+      <label htmlFor="asc">
+        <input
+          type="radio"
+          name="sort"
+          data-testid="column-sort-input-asc"
+          value="ASC"
+          id="asc"
+          onChange={ handleChange }
+        />
+        {' '}
+        Ascendente
+      </label>
+      <label htmlFor="desc">
+        <input
+          type="radio"
+          name="sort"
+          data-testid="column-sort-input-desc"
+          value="DESC"
+          id="asc"
+          onChange={ handleChange }
+        />
+        {' '}
+        Descendente
+      </label>
+      <button
+        onClick={ saveOrderFilter }
+        data-testid="column-sort-button"
+      >
+        Ordenar
+
       </button>
     </>
   );

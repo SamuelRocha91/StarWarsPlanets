@@ -41,7 +41,6 @@ function DataProvider({ children }) {
     setPlanets(planetsApi);
     setPlanetFiltered(planetsApi);
   };
-
   const values = useMemo(() => ({
     planets, setPlanets, planetFiltered, setPlanetFiltered, fetchAPI,
   }), [planets, setPlanets, planetFiltered, setPlanetFiltered]);

@@ -4,6 +4,7 @@ import App from '../App';
 import { data } from './Helpers/mockData';
 import userEvent from '@testing-library/user-event';
 import DataProvider from '../context/DataProvider';
+import FilterProvider from '../context/FilterProvider';
 
  
 
@@ -33,7 +34,9 @@ describe('Verifica se a aplicação...', () => {
 
   test('renderiza filtros para as informações a serem carregadas', () => {
     render( <DataProvider>
+      <FilterProvider>
       <App />
+      </FilterProvider>
     </DataProvider>,
   )
     const inputText = screen.getByTestId("name-filter");
@@ -48,9 +51,11 @@ describe('Verifica se a aplicação...', () => {
   })
   test('renderiza uma tabela com um dado conteúdo de título de categoria', () => {
     render( <DataProvider>
+      <FilterProvider>
       <App />
+      </FilterProvider>
     </DataProvider>,
-  );
+  )
     const classe = screen.getAllByRole('columnheader')
     category.map((item,index) => {
       expect(classe[index]).toHaveTextContent(item);
@@ -61,9 +66,11 @@ describe('Verifica se a aplicação...', () => {
 
   test('faz a requisição a API e renderiza as informações necessárias', async () => {
     render( <DataProvider>
+      <FilterProvider>
       <App />
+      </FilterProvider>
     </DataProvider>,
-  );
+  )
     const planet = await screen.findByText("Tatooine")
     expect(planet).toBeInTheDocument()
     expect(global.fetch).toHaveBeenCalled()
@@ -73,9 +80,11 @@ describe('Verifica se a aplicação...', () => {
 
   test('consegue fazer a filtragem do input de texto corretamente', async () => {
     render( <DataProvider>
+      <FilterProvider>
       <App />
+      </FilterProvider>
     </DataProvider>,
-  );
+  )
     const inputText = screen.getByTestId("name-filter");
     const planet = await screen.findByText("Tatooine");
 
@@ -98,10 +107,11 @@ describe('Verifica se a aplicação...', () => {
 
   test('consegue realizar filtros de comparação por categoria e números', async () => {
     render( <DataProvider>
+      <FilterProvider>
       <App />
+      </FilterProvider>
     </DataProvider>,
-  );
-
+  )
     const planet = await screen.findByText("Tatooine");
 
     const columnFilter = screen.getByTestId("column-filter")
@@ -135,9 +145,12 @@ describe('Verifica se a aplicação...', () => {
   })
 
   test('consegue apagar os filtros selecionados', async() => {
-    render(<DataProvider>
+    render( <DataProvider>
+      <FilterProvider>
       <App />
-    </DataProvider>)
+      </FilterProvider>
+    </DataProvider>,
+  )
     const planet = await screen.findByText("Alderaan");
     const btnRemoveAll = screen.getByTestId('button-remove-filters');
 
@@ -175,5 +188,33 @@ describe('Verifica se a aplicação...', () => {
     userEvent.click(btnRemoveAll)
 
     expect(screen.getByText('Tatooine')).toBeInTheDocument()
+  })
+  test('consegue ordenar os planetas por ordem crescente ou decrescente conforme o critério escolhido', async() => {
+    render( <DataProvider>
+      <FilterProvider>
+      <App />
+      </FilterProvider>
+    </DataProvider>,
+  )
+    const planet = await screen.findByText("Alderaan");
+    const columnFilter = screen.getByTestId("column-sort");
+    const radioAsc = screen.getByTestId("column-sort-input-asc")
+    const radioDesc = screen.getByTestId("column-sort-input-desc")
+    const btnOrder = screen.getByTestId("column-sort-button");
+
+    userEvent.click(radioAsc)
+    userEvent.click(btnOrder)
+
+    const planetsName = screen.getAllByTestId('planet-name')
+
+    expect(planetsName[0]).toHaveTextContent('Yavin IV')
+    expect(planetsName[1]).toHaveTextContent('Tatooine')
+
+    userEvent.selectOptions(columnFilter, "orbitalPeriod")
+    userEvent.click(radioDesc)
+    userEvent.click(btnOrder)
+
+    expect(screen.getAllByTestId('planet-name')[0]).toHaveTextContent('Bespin')
+    expect(screen.getAllByTestId('planet-name')[1]).toHaveTextContent('Yavin IV')
   })
 })
