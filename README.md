@@ -1,10 +1,11 @@
-# :construction: README em construção ! :construction:
-<!-- Olá, Tryber!
-Esse é apenas um arquivo inicial para o README do seu projeto.
-É essencial que você preencha esse documento por conta própria, ok?
-Não deixe de usar nossas dicas de escrita de README de projetos, e deixe sua criatividade brilhar!
-:warning: IMPORTANTE: você precisa deixar nítido:
-- quais arquivos/pastas foram desenvolvidos por você; 
-- quais arquivos/pastas foram desenvolvidos por outra pessoa estudante;
-- quais arquivos/pastas foram desenvolvidos pela Trybe.
--->
+<h1>Project Star Wars Planets</h1>
+<p>Trata-se de um projeto desenvolvido no módulo de FrontEnd do curso de Desenvolvimento Web da Trybe. O projeto envolveu o uso de Javascript, CSS e HTML através do framework React. Principais competências desenvolvidas: </p>
+<ul>
+  <li>Context Api;</li>
+  <li>Hooks;</li>
+  <li>Manipulação de estado;</li>
+  <li>Criação de componentes;</li>
+</ul>
+<p>No projeto foi desenvolvida uma lista com filtros de planetas do universo de Star Wars usando Context API e Hooks para controlar os estados globais.</p>
+
+[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/SamuelRocha91/StarWarsPlanets)
